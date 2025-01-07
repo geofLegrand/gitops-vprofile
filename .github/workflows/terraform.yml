@@ -13,8 +13,11 @@ env:
   AWS_REGION: us-east-1
   EKS_CLUSTER: vprofile-eks
   TF_VERSION: 1.6.3
+  WORKING_DIRECTORY: terraform
 permissions:
-  contents: read
+    issues: write
+    contents: read
+    pull-requests: write
   
 jobs:
   scan-terraform-config:
@@ -29,7 +32,7 @@ jobs:
         id: checkov
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: ./terraform
+          directory: ${{env.WORKING_DIRECTORY}}
           soft_fail: true
           
 
@@ -42,7 +45,8 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: ./terraform
+        working-directory: ${{env.WORKING_DIRECTORY}}
+
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -63,12 +67,14 @@ jobs:
 
       - name: Terraform validate
         id: validate
-        run: terraform validate
+        run: terraform validate -no-color
 
-            # Generates an execution plan for Terraform
+        # Generates an execution plan for Terraform
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color -input=false -out plan.out
+        # -input=false -out plan.out
+        if: github.event_name == 'pull_request'
+        run: terraform plan -no-color 
         continue-on-error: true
 
       - name: Terraform plan status
@@ -78,14 +84,15 @@ jobs:
       - name: Add terraform plan comment
         id: comment
         uses: actions/github-script@v6
-        if: github.event_name == 'push'
+        if: github.event_name == 'pull_request'
         env:
           PLAN: "terraform\n${{steps.plan.outputs.stdout}}"
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
+        #   , Working Directory: \`${{ env.tf_actions_working_dir }}\`
           script: |
-            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            const output = `#### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\` 
+            #### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
             #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
             #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
         
@@ -95,7 +102,7 @@ jobs:
             
             </details>
             
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`; 
               
             github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -107,7 +114,8 @@ jobs:
       - name: Terraform apply
         id: appl
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve -input=false -parallelism=1 plan.out
+        run: terraform apply -auto-approve 
+        # -input=false -parallelism=1 plan.out
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
