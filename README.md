@@ -10,15 +10,14 @@ Terraform version 1.6.3
 =======
 ### Steps from scratch
 >>>>>>> stage
-* terraform init
+* terraform init 
 * terraform fmt -check
 * terraform validate
 * terraform plan -no-color -out planfile 
 * terraform apply -auto-approve -input=false -parallelism=1 planfile
-<<<<<<< HEAD
+
 ######
 ######
-=======
+
 #####
 #####
->>>>>>> stage
