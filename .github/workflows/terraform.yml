@@ -114,7 +114,7 @@ jobs:
       - name: Terraform apply
         id: appl
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve 
+        run: terraform destroy -auto-approve 
         # -input=false -parallelism=1 plan.out
 
       - name: Configure AWS credentials
