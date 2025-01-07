@@ -69,7 +69,7 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-            # Generates an execution plan for Terraform
+        # Generates an execution plan for Terraform
       - name: Terraform Plan
         id: plan
         # -input=false -out plan.out
