@@ -14,8 +14,8 @@ env:
   EKS_CLUSTER: vprofile-eks
   TF_VERSION: 1.6.3
   WORKING_DIRECTORY: terraform
-# permissions:
-#   contents: read
+permissions:
+  contents: read
   
 jobs:
   scan-terraform-config:
