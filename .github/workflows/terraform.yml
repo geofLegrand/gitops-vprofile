@@ -35,7 +35,9 @@ jobs:
           directory: ${{env.WORKING_DIRECTORY}}
           soft_fail: true
           
-
+    outputs:
+      checkov_report: ${{ steps.checkov.outputs.results }}
+    
 
   deploy-infra-terraform:
     name: "Apply terraform code changes"
