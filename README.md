@@ -5,11 +5,19 @@
 ## Tools required
 Terraform version 1.6.3
 
+<<<<<<< HEAD
+#### Steps
+=======
 ### Steps from scratch
-* terraform init
+>>>>>>> stage
+* terraform init 
 * terraform fmt -check
 * terraform validate
 * terraform plan -no-color -out planfile 
 * terraform apply -auto-approve -input=false -parallelism=1 planfile
+
+######
+######
+
 #####
 #####
