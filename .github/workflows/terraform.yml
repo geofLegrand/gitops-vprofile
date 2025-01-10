@@ -41,7 +41,7 @@ jobs:
     name: "Apply terraform code changes"
     runs-on: ubuntu-latest
     environment: production
-    needs: [scan-terraform-config] # create the dependance for the job 01
+    needs: [scan-terraform-config] # create the dependance for the job 01 using needs proporty
     defaults:
       run:
         shell: bash
