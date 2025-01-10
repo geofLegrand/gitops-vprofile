@@ -35,7 +35,9 @@ jobs:
           directory: ${{env.WORKING_DIRECTORY}}
           soft_fail: true
           
-
+    outputs:
+      checkov_report: ${{ steps.checkov.outputs.results }}
+    
 
   deploy-infra-terraform:
     name: "Apply terraform code changes"
@@ -114,7 +116,9 @@ jobs:
       - name: Terraform apply
         id: appl
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform destroy -auto-approve 
+
+        run: terraform apply -auto-approve 
+
         # -input=false -parallelism=1 plan.out
 
       - name: Configure AWS credentials
